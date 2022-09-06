@@ -909,6 +909,7 @@ class SalarySlip(TransactionBase):
 		current_taxable_earnings = self.get_taxable_earnings(
 			tax_slab.allow_tax_exemption, payroll_period=payroll_period
 		)
+		#return current_taxable_earnings
 		future_structured_taxable_earnings = current_taxable_earnings.taxable_earnings * (
 			math.ceil(remaining_sub_periods) - 1
 		)
@@ -917,11 +918,14 @@ class SalarySlip(TransactionBase):
 		current_taxable_earnings_for_payment_days = self.get_taxable_earnings(
 			tax_slab.allow_tax_exemption, based_on_payment_days=1, payroll_period=payroll_period
 		)
+		#return current_taxable_earnings_for_payment_days.taxable_earnings
+		# return current_taxable_earnings_for_payment_days
 		current_structured_taxable_earnings = current_taxable_earnings_for_payment_days.taxable_earnings
 		current_additional_earnings = current_taxable_earnings_for_payment_days.additional_income
 		current_additional_earnings_with_full_tax = (
 			current_taxable_earnings_for_payment_days.additional_income_with_full_tax
 		)
+	#	return current_additional_earnings;
 
 		# Get taxable unclaimed benefits
 		unclaimed_taxable_benefits = 0
@@ -936,32 +940,36 @@ class SalarySlip(TransactionBase):
 		other_incomes = self.get_income_form_other_sources(payroll_period) or 0.0
 
 		# Total taxable earnings including additional and other incomes
+		
 		total_taxable_earnings = (
-			previous_taxable_earnings
-			+ current_structured_taxable_earnings
-			+ future_structured_taxable_earnings
+			#previous_taxable_earnings
+			 current_structured_taxable_earnings
+			#+ future_structured_taxable_earnings
 			+ current_additional_earnings
 			+ other_incomes
 			+ unclaimed_taxable_benefits
 			- total_exemption_amount
 		)
-
+		#return total_taxable_earnings;
 		# Total taxable earnings without additional earnings with full tax
 		total_taxable_earnings_without_full_tax_addl_components = (
 			total_taxable_earnings - current_additional_earnings_with_full_tax
 		)
-
+	#	return total_taxable_earnings_without_full_tax_addl_components
 		# Structured tax amount
 		eval_locals = self.get_data_for_eval()
+		total_taxable_earnings=(total_taxable_earnings)
 		total_structured_tax_amount = calculate_tax_by_tax_slab(
-			total_taxable_earnings_without_full_tax_addl_components,
+			total_taxable_earnings,
+			#total_taxable_earnings_without_full_tax_addl_components,
 			tax_slab,
 			self.whitelisted_globals,
 			eval_locals,
 		)
-		current_structured_tax_amount = (
-			total_structured_tax_amount - previous_total_paid_taxes
-		) / remaining_sub_periods
+		current_structured_tax_amount=total_structured_tax_amount
+		# current_structured_tax_amount = (
+		# 	total_structured_tax_amount - previous_total_paid_taxes
+		# ) / remaining_sub_periods
 
 		# Total taxable earnings with additional earnings with full tax
 		full_tax_on_additional_earnings = 0.0
@@ -976,6 +984,7 @@ class SalarySlip(TransactionBase):
 			current_tax_amount = 0
 
 		return current_tax_amount
+		#return current_taxable_earnings
 
 	def get_income_tax_slabs(self, payroll_period):
 		income_tax_slab, ss_assignment_name = frappe.db.get_value(
@@ -1674,18 +1683,27 @@ def calculate_tax_by_tax_slab(
 ):
 	eval_locals.update({"annual_taxable_earning": annual_taxable_earning})
 	tax_amount = 0
+	i=0
+	annual_taxable_earning=saannual_taxable_earning-200
 	for slab in tax_slab.slabs:
 		cond = cstr(slab.condition).strip()
+
+		# tax_amount += (slab.to_amount - slab.from_amount ) * slab.percent_deduction * 0.01
 		if cond and not eval_tax_slab_condition(cond, eval_globals, eval_locals):
 			continue
+			#return 0
 		if not slab.to_amount and annual_taxable_earning >= slab.from_amount:
-			tax_amount += (annual_taxable_earning - slab.from_amount + 1) * slab.percent_deduction * 0.01
+			tax_amount += (annual_taxable_earning - slab.from_amount +1) * slab.percent_deduction * 0.01
+			#return tax_amount
 			continue
 		if annual_taxable_earning >= slab.from_amount and annual_taxable_earning < slab.to_amount:
-			tax_amount += (annual_taxable_earning - slab.from_amount + 1) * slab.percent_deduction * 0.01
+			tax_amount += (annual_taxable_earning - slab.from_amount +1) * slab.percent_deduction * 0.01
+			#return annual_taxable_earning
 		elif annual_taxable_earning >= slab.from_amount and annual_taxable_earning >= slab.to_amount:
-			tax_amount += (slab.to_amount - slab.from_amount + 1) * slab.percent_deduction * 0.01
-
+			#tax_amount += (slab.to_amount - slab.from_amount + 1) * slab.percent_deduction * 0.01
+			tax_amount += (slab.to_amount - slab.from_amount+1 ) * slab.percent_deduction * 0.01
+			#return iftax_amount
+		
 	# other taxes and charges on income tax
 	for d in tax_slab.other_taxes_and_charges:
 		if flt(d.min_taxable_income) and flt(d.min_taxable_income) > annual_taxable_earning:
@@ -1695,6 +1713,7 @@ def calculate_tax_by_tax_slab(
 			continue
 
 		tax_amount += tax_amount * flt(d.percent) / 100
+		
 
 	return tax_amount
 

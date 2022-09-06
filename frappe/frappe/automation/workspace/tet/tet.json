@@ -1,0 +1,36 @@
+{
+ "charts": [],
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tet</span>\",\"col\":12}}]",
+ "creation": "2022-06-07 21:45:33.176622",
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "heart-active",
+ "idx": 0,
+ "label": "Tet",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "hr",
+   "link_count": 0,
+   "link_to": "Academic Term",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2022-06-07 21:47:10.451681",
+ "modified_by": "samsaf674@gmail.com",
+ "module": "Automation",
+ "name": "Tet",
+ "owner": "samsaf674@gmail.com",
+ "parent_page": "",
+ "public": 1,
+ "restrict_to_domain": "",
+ "roles": [],
+ "sequence_id": 31.0,
+ "shortcuts": [],
+ "title": "Tet"
+}
